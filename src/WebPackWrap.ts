@@ -28,6 +28,7 @@ export interface WebpackOptions {
     minifyJS: boolean;
     minify: boolean;
     stats: boolean;
+    provideJquery?: boolean;
     cache?: boolean;
     compression?: number;
     devtool?: string;
@@ -232,6 +233,16 @@ export default class WebPackWrap {
                 })
             );
         }
+
+        if (options.provideJquery) {
+            this.webpackConfig.plugins.push(
+                new webpack.ProvidePlugin({
+                    $: "jquery",
+                    jQuery: "jquery",
+                    "window.jQuery": "jquery",
+                })
+            );
+        }
     }
 
     async configureLoaders({
@@ -299,6 +310,7 @@ export default class WebPackWrap {
 
     async generateWebpackConfig(visualPackage, options: WebpackOptions = {
         devMode: false,
+        provideJquery: false,
         generateResources: false,
         generatePbiviz: false,
         minifyJS: true,

@@ -140,11 +140,6 @@ const webpackConfig = {
             filename: config.build.css,
             chunkFilename: "[id].css"
         }),
-        new webpack.ProvidePlugin({
-            "$": "jquery",
-            "jQuery": "jquery",
-            "window.jQuery": "jquery"
-        }),
     ]
 };
 

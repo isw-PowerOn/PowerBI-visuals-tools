@@ -10,26 +10,26 @@ export interface LintOptions {
     useDefault: boolean;
 }
 
-interface StartOptions {
-    port: number;
+interface BaseBuildOptions {
     stats: boolean;
-    drop: boolean;
     skipApi: boolean;
     allLocales: boolean;
     pbivizFile: string;
+    provideJquery: boolean;
 }
 
-interface PackageOptions {
+interface StartOptions extends BaseBuildOptions {
+    port: number;
+    drop: boolean;
+}
+
+interface PackageOptions extends BaseBuildOptions {
     pbiviz: boolean;
     resources: boolean;
     minify: boolean;
     compression: number;
-    stats: boolean;
-    skipApi: boolean;
-    allLocales: boolean;
     verbose: boolean;
     fix: boolean;
-    pbivizFile: string;
     useDefault: boolean;
 }
 
@@ -54,6 +54,7 @@ export default class CommandManager {
             skipApiCheck: options.skipApi,
             allLocales: options.allLocales,
             pbivizFile: options.pbivizFile,
+            provideJquery: options.provideJquery,
         }
         const visualManager = new VisualManager(rootPath)
         await visualManager
@@ -82,11 +83,12 @@ export default class CommandManager {
             generatePbiviz: options.pbiviz,
             minifyJS: options.minify,
             minify: options.minify,
-            compression: options.compression, 
+            compression: options.compression,
             stats: options.stats,
             skipApiCheck: options.skipApi,
             allLocales: options.allLocales,
             pbivizFile: options.pbivizFile,
+            provideJquery: options.provideJquery,
         }
         const lintOptions: LintOptions = {
             verbose: options.verbose,

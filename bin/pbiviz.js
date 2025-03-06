@@ -86,6 +86,7 @@ pbiviz
     .option('--skip-api', "Skips powerbi-visuals-api verifying")
     .option('-l, --all-locales', "Keeps all locale files in the package. By default only used inside stringResources folder locales are included.")
     .option('-f, --pbiviz-file <pbiviz-file>', "Path to pbiviz.json file (useful for debugging)", pbivizFile)
+    .option('--provide-jquery', 'Provides jQuery module through webpack')
     .action(async (options) => {
         CommandManager.start(options, rootPath);
     });
@@ -103,6 +104,7 @@ pbiviz
     .option('--fix', 'Enable autofixing of lint errors')
     .option('--use-default', 'Use recommended eslint config file')
     .option('-p, --pbiviz-file <pbiviz-file>', "Path to pbiviz.json file (useful for debugging)", pbivizFile)
+    .option('--provide-jquery', 'Provides jQuery module through webpack')
     .addOption(new Option('-c, --compression <compressionLevel>', "Enables compression of visual package")
         .choices(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'])
         .default('6')
