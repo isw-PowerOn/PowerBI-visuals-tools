@@ -28,6 +28,7 @@ export interface WebpackOptions {
     minifyJS: boolean;
     minify: boolean;
     stats: boolean;
+    cache?: boolean;
     compression?: number;
     devtool?: string;
     devServerPort?: number;
@@ -265,6 +266,10 @@ export default class WebPackWrap {
             this.enableOptimization();
         }
 
+        if (options.cache) {
+            this.webpackConfig.cache = options.cache;
+        }
+
         if (options.devtool) {
             this.webpackConfig.devtool = options.devtool;
         }
@@ -299,6 +304,7 @@ export default class WebPackWrap {
         minifyJS: true,
         minify: true,
         devServerPort: 8080,
+        cache: false,
         fast: false,
         compression: 0,
         stats: true,

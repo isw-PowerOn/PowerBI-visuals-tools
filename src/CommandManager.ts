@@ -43,11 +43,12 @@ export default class CommandManager {
     public static async start(options: StartOptions, rootPath: string) {
         const webpackOptions: WebpackOptions = {
             devMode: true,
-            devtool: "source-map",
+            devtool: "eval-cheap-source-map",
             generateResources: true,
             generatePbiviz: false,
             minifyJS: false,
             minify: false,
+            cache: true,
             devServerPort: options.port,
             stats: options.stats,
             skipApiCheck: options.skipApi,
@@ -74,7 +75,7 @@ export default class CommandManager {
             ConsoleWriter.error('Nothing to build. Cannot use --no-pbiviz without --resources');
             process.exit(1);
         }
-        
+
         const webpackOptions: WebpackOptions = {
             devMode: false,
             generateResources: options.resources,
