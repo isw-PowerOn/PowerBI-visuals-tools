@@ -13,15 +13,17 @@ export class LintValidator {
     private readonly isVerboseMode: boolean;
     private readonly useDefault: boolean;
     private readonly shouldFix: boolean;
+    private readonly maxWarnings: number = -1;
     private config: ESLint.Options;
     private linterInstance: ESLint;
 
-    constructor({verbose, fix, useDefault}: LintOptions) {
+    constructor({verbose, fix, useDefault, maxWarnings}: LintOptions) {
         this.visualPath = process.cwd()
         this.rootPath = getRootPath();
         this.isVerboseMode = verbose;
         this.useDefault = useDefault;
         this.shouldFix = fix;
+        this.maxWarnings = maxWarnings;
 
         this.prepareConfig();
         this.linterInstance = new ESLint(this.config);
@@ -59,6 +61,13 @@ export class LintValidator {
             const totalWarnings = filteredResults.reduce((acc, curr) => acc + curr.warningCount, 0);
             if (totalErrors > 0 || totalWarnings > 0) {
                 ConsoleWriter.error(`Linter found ${totalErrors} errors and ${totalWarnings} warnings. Run with --verbose flag to see details.`)
+            }
+            if (
+                this.maxWarnings > -1
+                && (totalWarnings > this.maxWarnings || totalErrors > this.maxWarnings)
+            ) {
+                ConsoleWriter.error(`Linter found ${totalWarnings} warnings and ${totalErrors} errors, which exceeds the maximum allowed warnings of ${this.maxWarnings}.`);
+                process.exit(1);
             }
         }   
     }

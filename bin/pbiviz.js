@@ -73,6 +73,7 @@ pbiviz
     .command('lint')
     .option('--fix', 'Enable autofixing of lint errors')
     .option('--use-default', 'Use recommended eslint config file')
+    .option('--max-warnings <max-warnings>', 'Set the maximum number of warnings allowed', '-1')
     .action(options => {
         CommandManager.lint({ ...options, verbose: true }, rootPath);
     });
@@ -103,6 +104,7 @@ pbiviz
     .option('-v, --verbose', "Enables verbose logging")
     .option('--fix', 'Enable autofixing of lint errors')
     .option('--use-default', 'Use recommended eslint config file')
+    .option('--max-warnings <max-warnings>', 'Set the maximum number of warnings allowed', '-1')
     .option('-p, --pbiviz-file <pbiviz-file>', "Path to pbiviz.json file (useful for debugging)", pbivizFile)
     .option('--provide-jquery', 'Provides jQuery module through webpack')
     .addOption(new Option('-c, --compression <compressionLevel>', "Enables compression of visual package")

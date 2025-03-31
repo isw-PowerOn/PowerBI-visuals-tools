@@ -8,6 +8,7 @@ export interface LintOptions {
     verbose: boolean;
     fix: boolean;
     useDefault: boolean;
+    maxWarnings: number;
 }
 
 interface BaseBuildOptions {
@@ -31,6 +32,7 @@ interface PackageOptions extends BaseBuildOptions {
     verbose: boolean;
     fix: boolean;
     useDefault: boolean;
+    maxWarnings: number;
 }
 
 interface NewOptions {
@@ -93,7 +95,8 @@ export default class CommandManager {
         const lintOptions: LintOptions = {
             verbose: options.verbose,
             fix: options.fix,
-            useDefault: options.useDefault
+            useDefault: options.useDefault,
+            maxWarnings: options.maxWarnings
         }
         const visual = new VisualManager(rootPath).prepareVisual(options.pbivizFile)
         await visual.runLintValidation(lintOptions)
