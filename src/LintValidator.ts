@@ -50,24 +50,24 @@ export class LintValidator {
     }
 
     private async outputResults(results: ESLint.LintResult[]) {
+        const filteredResults = ESLint.getErrorResults(results);
+        // get total amount of errors and warnings in all elements of filteredResults
+        const totalErrors = filteredResults.reduce((acc, curr) => acc + curr.errorCount, 0);
+        const totalWarnings = filteredResults.reduce((acc, curr) => acc + curr.warningCount, 0);
+        if (
+            this.maxWarnings > -1
+            && ((totalWarnings + totalErrors) > this.maxWarnings)
+        ) {
+            ConsoleWriter.error(`Linter found ${totalWarnings} warnings and ${totalErrors} errors, which exceeds the maximum allowed warnings of ${this.maxWarnings}.`);
+            process.exit(1);
+        }
         if (this.isVerboseMode) {
             const formatter = await this.linterInstance.loadFormatter("stylish");
             const formattedResults = await formatter.format(results);
             console.log(formattedResults)
         } else {
-            const filteredResults = ESLint.getErrorResults(results);
-            // get total amount of errors and warnings in all elements of filteredResults
-            const totalErrors = filteredResults.reduce((acc, curr) => acc + curr.errorCount, 0);
-            const totalWarnings = filteredResults.reduce((acc, curr) => acc + curr.warningCount, 0);
             if (totalErrors > 0 || totalWarnings > 0) {
                 ConsoleWriter.error(`Linter found ${totalErrors} errors and ${totalWarnings} warnings. Run with --verbose flag to see details.`)
-            }
-            if (
-                this.maxWarnings > -1
-                && (totalWarnings > this.maxWarnings || totalErrors > this.maxWarnings)
-            ) {
-                ConsoleWriter.error(`Linter found ${totalWarnings} warnings and ${totalErrors} errors, which exceeds the maximum allowed warnings of ${this.maxWarnings}.`);
-                process.exit(1);
             }
         }   
     }
