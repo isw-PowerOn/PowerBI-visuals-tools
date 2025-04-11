@@ -33,6 +33,7 @@ interface PackageOptions extends BaseBuildOptions {
     fix: boolean;
     useDefault: boolean;
     maxWarnings: number;
+    sourceMap: boolean;
 }
 
 interface NewOptions {
@@ -41,11 +42,12 @@ interface NewOptions {
 }
 
 export default class CommandManager {
+    private static readonly SOURCE_MAP_TYPE = "eval-cheap-source-map";
 
     public static async start(options: StartOptions, rootPath: string) {
         const webpackOptions: WebpackOptions = {
             devMode: true,
-            devtool: "eval-cheap-source-map",
+            devtool: this.SOURCE_MAP_TYPE,
             generateResources: true,
             generatePbiviz: false,
             minifyJS: false,
@@ -65,7 +67,7 @@ export default class CommandManager {
             .initializeWebpack(webpackOptions)
         visualManager.startWebpackServer(options.drop)
     }
-    
+
     public static async lint(options: LintOptions, rootPath: string) {
         const visualManager = new VisualManager(rootPath)
         await visualManager
@@ -91,6 +93,7 @@ export default class CommandManager {
             allLocales: options.allLocales,
             pbivizFile: options.pbivizFile,
             provideJquery: options.provideJquery,
+            ...(options.sourceMap ? { devtool: this.SOURCE_MAP_TYPE } : {}),
         }
         const lintOptions: LintOptions = {
             verbose: options.verbose,

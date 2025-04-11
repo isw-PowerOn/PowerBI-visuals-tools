@@ -107,6 +107,7 @@ pbiviz
     .option('--max-warnings <max-warnings>', 'Set the maximum number of warnings allowed', '-1')
     .option('-p, --pbiviz-file <pbiviz-file>', "Path to pbiviz.json file (useful for debugging)", pbivizFile)
     .option('--provide-jquery', 'Provides jQuery module through webpack')
+    .option('--source-map', 'Enables source map generation')
     .addOption(new Option('-c, --compression <compressionLevel>', "Enables compression of visual package")
         .choices(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'])
         .default('6')
