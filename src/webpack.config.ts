@@ -44,7 +44,18 @@ const webpackConfig = {
                 type: "javascript/auto"
             },
             {
-                test: /(\.less)|(\.css)$/,
+                test: /\.css$/,
+                use: [
+                    {
+                        loader: MiniCssExtractPlugin.loader
+                    },
+                    {
+                        loader: "css-loader"
+                    },
+                ]
+            },
+            {
+                test: /\.less$/,
                 use: [
                     {
                         loader: MiniCssExtractPlugin.loader
@@ -54,11 +65,6 @@ const webpackConfig = {
                     },
                     {
                         loader: "less-loader",
-                        options: {
-                            lessOptions: {
-                                paths: [path.resolve(rootPath, 'node_modules')]
-                            }
-                        }
                     }
                 ]
             },
