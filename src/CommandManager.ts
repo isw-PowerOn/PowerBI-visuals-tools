@@ -22,6 +22,7 @@ interface BaseBuildOptions {
 interface StartOptions extends BaseBuildOptions {
     port: number;
     drop: boolean;
+    noCache: boolean;
 }
 
 interface PackageOptions extends BaseBuildOptions {
@@ -52,7 +53,7 @@ export default class CommandManager {
             generatePbiviz: false,
             minifyJS: false,
             minify: false,
-            cache: true,
+            cache: !options.noCache,
             devServerPort: options.port,
             stats: options.stats,
             skipApiCheck: options.skipApi,

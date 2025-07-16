@@ -88,6 +88,7 @@ pbiviz
     .option('-l, --all-locales', "Keeps all locale files in the package. By default only used inside stringResources folder locales are included.")
     .option('-f, --pbiviz-file <pbiviz-file>', "Path to pbiviz.json file (useful for debugging)", pbivizFile)
     .option('--provide-jquery', 'Provides jQuery module through webpack')
+    .option('--no-cache', 'Doesn\'t use webpack cache')
     .action(async (options) => {
         CommandManager.start(options, rootPath);
     });
