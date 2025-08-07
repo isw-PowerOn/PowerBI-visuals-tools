@@ -32,7 +32,7 @@ import CommandManager from '../lib/CommandManager.js';
 import { readJsonFromRoot } from '../lib/utils.js';
 import { program, Option } from 'commander';
 
-const npmPackage = readJsonFromRoot('package.json');
+const npmPackage = await readJsonFromRoot('package.json');
 const rootPath = process.cwd();
 const pbivizFile = 'pbiviz.json';
 
@@ -86,7 +86,7 @@ pbiviz
     .option('--no-stats', "Doesn't generate statistics files")
     .option('--skip-api', "Skips powerbi-visuals-api verifying")
     .option('-l, --all-locales', "Keeps all locale files in the package. By default only used inside stringResources folder locales are included.")
-    .option('-f, --pbiviz-file <pbiviz-file>', "Path to pbiviz.json file (useful for debugging)", pbivizFile)
+    .option('-f, --pbiviz-file <pbiviz-file>', "Path to visual config file (pbiviz.json / pbiviz.mjs)", pbivizFile)
     .option('--provide-jquery', 'Provides jQuery module through webpack')
     .option('--no-cache', 'Doesn\'t use webpack cache')
     .action(async (options) => {
@@ -106,9 +106,11 @@ pbiviz
     .option('--fix', 'Enable autofixing of lint errors')
     .option('--use-default', 'Use recommended eslint config file')
     .option('--max-warnings <max-warnings>', 'Set the maximum number of warnings allowed', '-1')
-    .option('-p, --pbiviz-file <pbiviz-file>', "Path to pbiviz.json file (useful for debugging)", pbivizFile)
+    .option('-p, --pbiviz-file <pbiviz-file>', "Path to visual config file (pbiviz.json / pbiviz.mjs)", pbivizFile)
     .option('--provide-jquery', 'Provides jQuery module through webpack')
     .option('--source-map', 'Enables source map generation')
+    .option('--certification-audit ', 'Audit the visual package for possible certification issues')
+    .option('--certification-fix', 'Fix found certification issues in the visual package. Please carefully test the built package to ensure its functionality is not broken after that')
     .addOption(new Option('-c, --compression <compressionLevel>', "Enables compression of visual package")
         .choices(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'])
         .default('6')

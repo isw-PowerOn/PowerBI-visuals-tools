@@ -35,6 +35,8 @@ interface PackageOptions extends BaseBuildOptions {
     useDefault: boolean;
     maxWarnings: number;
     sourceMap: boolean;
+    certificationAudit: boolean;
+    certificationFix: boolean;
 }
 
 interface NewOptions {
@@ -61,19 +63,17 @@ export default class CommandManager {
             pbivizFile: options.pbivizFile,
             provideJquery: options.provideJquery,
         }
-        const visualManager = new VisualManager(rootPath)
-        await visualManager
-            .prepareVisual(options.pbivizFile)
-            .validateVisual()
-            .initializeWebpack(webpackOptions)
-        visualManager.startWebpackServer(options.drop)
+        const visualManager = new VisualManager(rootPath);
+        await visualManager.prepareVisual(options.pbivizFile);
+        await visualManager.validateVisual();
+        await visualManager.initializeWebpack(webpackOptions);
+        visualManager.startWebpackServer(options.drop);
     }
 
     public static async lint(options: LintOptions, rootPath: string) {
-        const visualManager = new VisualManager(rootPath)
-        await visualManager
-            .prepareVisual()
-            .runLintValidation(options)
+        const visualManager = new VisualManager(rootPath);
+        await visualManager.prepareVisual();
+        await visualManager.runLintValidation(options);
     }
 
     public static async package(options: PackageOptions, rootPath: string) {
@@ -93,6 +93,8 @@ export default class CommandManager {
             skipApiCheck: options.skipApi,
             allLocales: options.allLocales,
             pbivizFile: options.pbivizFile,
+            certificationAudit: options.certificationAudit,
+            certificationFix: options.certificationFix,
             provideJquery: options.provideJquery,
             ...(options.sourceMap ? { devtool: this.SOURCE_MAP_TYPE } : {}),
         }
@@ -102,11 +104,12 @@ export default class CommandManager {
             useDefault: options.useDefault,
             maxWarnings: options.maxWarnings
         }
-        const visual = new VisualManager(rootPath).prepareVisual(options.pbivizFile)
+        const visualManager = new VisualManager(rootPath)
+        const visual = await visualManager.prepareVisual(options.pbivizFile)
         await visual.runLintValidation(lintOptions)
-        visual.validateVisual(options.verbose)
-            .initializeWebpack(webpackOptions)
-            .then(visualManager => visualManager.generatePackage(options.verbose))
+        await visual.validateVisual(options.verbose)
+        await visual.initializeWebpack(webpackOptions)
+            .then(manager => manager.generatePackage(options.verbose))
     }
 
     public static new({ force, template }: NewOptions, name: string, rootPath: string) {
@@ -117,10 +120,10 @@ export default class CommandManager {
         VisualManager.createVisual(rootPath, name, generateOptions)
     }
 
-    public static info(rootPath: string) {
-        new VisualManager(rootPath)
-            .prepareVisual()
-            .displayInfo();
+    public static async info(rootPath: string) {
+        const visualManager = new VisualManager(rootPath);
+        await visualManager.prepareVisual();
+        await visualManager.displayInfo();
     }
 
     public static async installCert() {

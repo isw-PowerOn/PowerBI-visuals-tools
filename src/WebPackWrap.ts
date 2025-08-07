@@ -15,8 +15,8 @@ import ConsoleWriter from './ConsoleWriter.js';
 import { resolveCertificate } from "./CertificateTools.js";
 import { readJsonFromRoot, readJsonFromVisual } from './utils.js'
 
-const config = readJsonFromRoot('config.json');
-const npmPackage = readJsonFromRoot('package.json');
+const config = await readJsonFromRoot('config.json');
+const npmPackage = await readJsonFromRoot('package.json');
 
 const visualPlugin = "visualPlugin.ts";
 const encoding = "utf8";
@@ -37,6 +37,8 @@ export interface WebpackOptions {
     skipApiCheck?: boolean;
     allLocales?: boolean;
     pbivizFile?: string;
+    certificationAudit?: boolean;
+    certificationFix?: boolean;
 }
 
 export default class WebPackWrap {
@@ -153,7 +155,7 @@ export default class WebPackWrap {
         }
 
         const api = await WebPackWrap.loadAPIPackage();
-        const dependenciesPath = this.pbiviz.dependencies && path.join(process.cwd(), this.pbiviz.dependencies);
+        const dependenciesPath = typeof this.pbiviz.dependencies === "string" && path.join(process.cwd(), this.pbiviz.dependencies);
         let pluginConfiguration = {
             ...lodashCloneDeep(visualPackage.pbivizConfig),
 
@@ -172,8 +174,9 @@ export default class WebPackWrap {
             modules: typeof tsconfig.compilerOptions.outDir !== "undefined",
             visualSourceLocation: path.posix.relative(config.build.precompileFolder, tsconfig.files[0]).replace(/(\.ts)x|\.ts/, ""),
             pluginLocation: path.join(config.build.precompileFolder, "visualPlugin.ts"),
-            compression: options.compression
-
+            compression: options.compression,
+            certificationAudit: options.certificationAudit,
+            certificationFix: options.certificationFix,
         };
         return pluginConfiguration;
     }
@@ -225,7 +228,7 @@ export default class WebPackWrap {
             })
         );
 
-        if (options.devtool === "source-map" && this.webpackConfig.devServer.port) {
+        if (options.devMode && options.devtool && this.webpackConfig.devServer.port) {
             this.webpackConfig.plugins.push(
                 new webpack.SourceMapDevToolPlugin({
                     filename: '[file].map',
@@ -323,9 +326,11 @@ export default class WebPackWrap {
         skipApiCheck: false,
         allLocales: false,
         pbivizFile: 'pbiviz.json',
+        certificationAudit: false,
+        certificationFix: false,
     }) {
-        const tsconfig = readJsonFromVisual('tsconfig.json');
-        this.pbiviz = readJsonFromVisual(options.pbivizFile);
+        const tsconfig = await readJsonFromVisual('tsconfig.json');
+        this.pbiviz = await readJsonFromVisual(options.pbivizFile);
 
         const capabilitiesPath = this.pbiviz.capabilities;
         visualPackage.pbivizConfig.capabilities = capabilitiesPath;

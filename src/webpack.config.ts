@@ -1,11 +1,10 @@
-
 import { getRootPath, readJsonFromRoot } from './utils.js';
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import TerserPlugin from "terser-webpack-plugin";
 import path from "path";
 import webpack from "webpack";
 
-const config = readJsonFromRoot("/config.json");
+const config = await readJsonFromRoot("/config.json");
 const rootPath = getRootPath();
 
 const webpackConfig = {
@@ -36,6 +35,12 @@ const webpackConfig = {
             {
                 parser: {
                     amd: false
+                }
+            },
+            {
+                test: /\.m?js/,
+                resolve: {
+                    fullySpecified: false
                 }
             },
             {
@@ -135,7 +140,7 @@ const webpackConfig = {
         }
     },
     watchOptions: {
-        ignored: ['node_modules", "**']
+        ignored: ['node_modules/**']
     },
     plugins: [
         new webpack.ProvidePlugin({

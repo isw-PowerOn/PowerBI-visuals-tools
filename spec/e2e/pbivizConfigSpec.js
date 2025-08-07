@@ -26,27 +26,30 @@
 
 "use strict";
 
+import { createRequire } from 'module';
 import fs from 'fs-extra';
 import path from 'path';
 import FileSystem from '../helpers/FileSystem.js';
-import { writeMetadata } from "./testUtils.js";
+import { writeMetadataAsJsFile } from "./testUtils.js";
+import { readJsonFromVisual } from "../../lib/utils.js";
 
+const require = createRequire(import.meta.url);
 const tempPath = path.join(FileSystem.getTempPath(), path.basename(import.meta.url));
 const startPath = process.cwd();
 
-describe("E2E - pbiviz info", () => {
+describe("E2E - pbiviz JS config", () => {
 
-    const visualName = 'myvisualname';
+    const visualName = 'myjsvisualname';
     const visualPath = path.join(tempPath, visualName);
 
-    beforeEach(() => {
+    beforeEach(async () => {
         process.chdir(startPath);
         FileSystem.resetDirectory(tempPath);
         process.chdir(tempPath);
         FileSystem.runPbiviz('new', visualName);
         process.chdir(visualPath);
 
-        writeMetadata(visualPath);
+        await writeMetadataAsJsFile(visualPath);
     });
 
     afterAll(() => {
@@ -54,26 +57,11 @@ describe("E2E - pbiviz info", () => {
         FileSystem.deleteDirectory(tempPath);
     });
 
-    it("Should throw error if not in the visual root", () => {
-        let error;
-        process.chdir(tempPath);
-
-        try {
-            FileSystem.runPbiviz('info');
-        } catch (e) {
-            error = e;
-        }
-
-        expect(error).toBeDefined();
-        expect(error.status).toBe(1);
-        expect(error.message).toContain("pbiviz.json not found. You must be in the root of a visual project to run this command");
-
-    });
-
-    it("Should output visual info", () => {
+    it("Should output visual info from a JS file", async () => {
         const output = FileSystem.runPbiviz('info').toString();
-        const visualConfig = fs.readJsonSync(path.join(visualPath, 'pbiviz.json')).visual;
+        const visualConfig = (await readJsonFromVisual('pbiviz.mjs', visualPath)).visual;
         expect(output).toContain(visualName);
         expect(output).toContain(visualConfig.guid);
     });
 });
+

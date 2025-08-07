@@ -49,7 +49,7 @@ export interface GenerateOptions {
     template: string;
 }
 
-const globalConfig = readJsonFromRoot('config.json');
+const globalConfig = await readJsonFromRoot('config.json');
 const PBIVIZ_FILE = 'pbiviz.json';
 
 /**
@@ -70,10 +70,11 @@ export default class VisualManager {
         this.basePath = rootPath;
     }
 
-    public prepareVisual(pbivizFile: string = PBIVIZ_FILE) {
-        if (this.doesPBIVIZExists(pbivizFile)) {
-            this.pbivizConfig = readJsonFromVisual(pbivizFile, this.basePath);
-            this.createVisualInstance();
+    public async prepareVisual(pbivizFile: string = PBIVIZ_FILE) {
+        this.pbivizConfig = await readJsonFromVisual(pbivizFile, this.basePath);
+
+        if (this.pbivizConfig) {
+            await this.createVisualInstance();
         } else {
             ConsoleWriter.error(pbivizFile + ' not found. You must be in the root of a visual project to run this command.')
             process.exit(1);
@@ -94,8 +95,8 @@ export default class VisualManager {
         
     }
     
-    public createVisualInstance() {
-        this.capabilities = readJsonFromVisual("capabilities.json", this.basePath);
+    public async createVisualInstance() {
+        this.capabilities = await readJsonFromVisual("capabilities.json", this.basePath);
         this.visual = new Visual(this.capabilities, this.pbivizConfig);
     }
 
@@ -220,7 +221,7 @@ export default class VisualManager {
         }
 
         try {
-            const config = readJsonFromRoot('config.json');
+            const config = await readJsonFromRoot('config.json');
             if(config.visualTemplates[generateOptions.template]){
                 new TemplateFetcher( generateOptions.template, visualName, undefined )
                     .fetch();
@@ -261,23 +262,32 @@ export default class VisualManager {
     private prepareDropFiles() {
         this.webpackConfig.devServer.setupMiddlewares = (middlewares, devServer) => {
             const { headers, publicPath, static: { directory } } = this.webpackConfig.devServer;
-            const assets = [ 'visual.js`', 'visual.css', 'pbiviz.json' ]
-
+            const assets = ['visual.js', 'visual.css', 'pbiviz.json'];
             const setHeaders = (res) => {
                 Object.getOwnPropertyNames(headers)
                     .forEach(property => res.header(property, headers[property]));
             };
+
             const readFile = (file, res, name) => {
+                const assetMiddleware = (req, middlewareRes, next) => {
+                    fs.readFile(file)
+                        .then(content => {
+                            middlewareRes.write(content);
+                            ConsoleWriter.info(`Serving ${name}`);
+                            middlewareRes.end();
+                        })
+                        .catch(err => {
+                            ConsoleWriter.error(`Error serving ${name}: ${err.message}`);
+                            next();
+                        });
+                };
+                
                 middlewares.unshift({
                     name,
-                    middleware: (req, middlewareRes) => {
-                        fs.readFile(file).then(function (content) {
-                            middlewareRes.write(content);
-                            console.log(`Serving ${name} to `);
-                            middlewareRes.end();
-                        });
-                    },
+                    path: `${publicPath}/${name}`,
+                    middleware: assetMiddleware
                 });
+                
                 res.end();
             };
 
