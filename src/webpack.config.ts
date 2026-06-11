@@ -86,7 +86,8 @@ const webpackConfig = {
         "powerbi-visuals-api": 'null'
     },
     resolve: {
-        symlinks: false,
+        alias: {},
+        symlinks: true,
         extensions: ['.tsx', '.ts', '.jsx', '.js', '.mjs', '.css'],
         modules: ['node_modules', path.resolve(rootPath, 'node_modules')],
         fallback: {

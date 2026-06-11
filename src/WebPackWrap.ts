@@ -90,9 +90,10 @@ export default class WebPackWrap {
 
     enableOptimization() {
         this.webpackConfig.mode = "production";
-        this.webpackConfig.optimization = {
-            concatenateModules: false,
-            minimize: true
+        this.webpackConfig.optimization.concatenateModules = false;
+        this.webpackConfig.optimization.minimize = true;
+        this.webpackConfig.resolve.alias = {
+            "@xbs/webix-pro$": path.resolve(process.cwd(), 'node_modules/@xbs/webix-pro/webix.min.js')
         };
     }
 
