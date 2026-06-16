@@ -92,9 +92,7 @@ export default class WebPackWrap {
         this.webpackConfig.mode = "production";
         this.webpackConfig.optimization.concatenateModules = false;
         this.webpackConfig.optimization.minimize = true;
-        this.webpackConfig.resolve.alias = {
-            "@xbs/webix-pro$": path.resolve(process.cwd(), 'node_modules/@xbs/webix-pro/webix.min.js')
-        };
+        this.webpackConfig.resolve.alias["@xbs/webix-pro$"] = path.resolve(process.cwd(), 'node_modules/@xbs/webix-pro/webix.min.js');
     }
 
     async configureDevServer(visualPackage, port = 8080) {
