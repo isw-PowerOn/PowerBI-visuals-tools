@@ -3,6 +3,7 @@ import { createCertificate } from './CertificateTools.js';
 import ConsoleWriter from './ConsoleWriter.js';
 import VisualManager, { GenerateOptions } from './VisualManager.js';
 import { WebpackOptions } from './WebPackWrap.js';
+import { startMcpServer, initMcpConfig } from './mcp/McpServer.js';
 
 export interface LintOptions {
     verbose: boolean;
@@ -104,12 +105,13 @@ export default class CommandManager {
             useDefault: options.useDefault,
             maxWarnings: options.maxWarnings
         }
+        const certificationMode = options.certificationAudit || options.certificationFix;
         const visualManager = new VisualManager(rootPath)
         const visual = await visualManager.prepareVisual(options.pbivizFile)
         await visual.runLintValidation(lintOptions)
         await visual.validateVisual(options.verbose)
         await visual.initializeWebpack(webpackOptions)
-            .then(manager => manager.generatePackage(options.verbose))
+            .then(manager => manager.generatePackage(options.verbose, certificationMode))
     }
 
     public static new({ force, template }: NewOptions, name: string, rootPath: string) {
@@ -128,5 +130,13 @@ export default class CommandManager {
 
     public static async installCert() {
         await createCertificate();
+    }
+
+    public static async mcp(rootPath: string) {
+        await startMcpServer(rootPath);
+    }
+
+    public static async mcpInit(rootPath: string) {
+        await initMcpConfig(rootPath);
     }
 }

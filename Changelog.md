@@ -1,6 +1,46 @@
 # Change Log - PowerBI Visual Tools (pbiviz)
 
 This page contains information about changes to the PowerBI Visual Tools (pbiviz).
+## 7.2.0
+* Added a pre-build validation that fails with an error when the visual version contains parts with leading zeros (rejected by the Power BI marketplace package acceptance check).
+* Bumped `powerbi-visuals-api` to `5.11.1` in the visual templates.
+
+## 7.1.2
+* Npm audit fixes.
+
+## 7.1.1
+* Minor documentation and metadata updates.
+
+## 7.1.0
+* Updated packages.
+
+## 7.0.4
+* Treated renderingEvents issue as an error when certification-audit and certification-fix are used.
+* Switched to a new webpack plugin.
+* Added rendering events to the visual templates.
+* Updated packages.
+
+## 7.0.3
+* Fixed missing validation for `author` object in pbiviz.json. The `author` object with `name` and `email` fields is now required.
+* Updated packages.
+
+## 7.0.2
+* Changed source map generation to `eval-source-map`.
+* Fixed load source map error.
+* Updated packages.
+
+## 7.0.1
+* Fixed issue with missing `lib/*` files in latest versions.
+* Updated packages
+
+## 7.0.0
+* **BREAKING CHANGE**: Removed Node.js polyfills from webpack configuration for improved security and reduced bundle size. Node.js modules (crypto, buffer, stream, etc.) are no longer automatically available in the browser environment.
+* Removed browserify polyfill packages from dependencies (assert, buffer, crypto-browserify, console-browserify, constants-browserify, domain-browser, events, https-browserify, os-browserify, path-browserify, process, punycode, querystring-es3, readable-stream, stream-browserify, stream-http, string_decoder, timers-browserify, tty-browserify, url, util, vm-browserify, browserify-zlib)
+* **Action Required**: Review your visual code for Node.js module usage and remove them or update to browser-compatible alternatives
+
+## 6.2.0
+* Changed source map generation to `inline-source-map`. It includes source maps into the end of file instead of separate one. It's required because of latest changes in Power BI that forbids loading `.map` files.
+* Updated packages
 
 ## 6.1.2
 * Fixed issue with `process/browser` not being resolved correctly in webpack config

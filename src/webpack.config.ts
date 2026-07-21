@@ -2,7 +2,6 @@ import { getRootPath, readJsonFromRoot } from './utils.js';
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import TerserPlugin from "terser-webpack-plugin";
 import path from "path";
-import webpack from "webpack";
 
 const config = await readJsonFromRoot("/config.json");
 const rootPath = getRootPath();
@@ -83,7 +82,33 @@ const webpackConfig = {
         modules: ['node_modules', path.resolve(rootPath, 'node_modules')],
     },
     externals: {
-        "powerbi-visuals-api": 'null'
+        "powerbi-visuals-api": 'null',
+        // Prevent Node.js core modules from being bundled
+        "fs": "{}",
+        "path": "{}",
+        "os": "{}",
+        "crypto": "{}",
+        "http": "{}",
+        "https": "{}",
+        "url": "{}",
+        "util": "{}",
+        "stream": "{}",
+        "buffer": "{}",
+        "process": "{}",
+        "events": "{}",
+        "child_process": "{}",
+        "cluster": "{}",
+        "dgram": "{}",
+        "dns": "{}",
+        "net": "{}",
+        "readline": "{}",
+        "repl": "{}",
+        "tls": "{}",
+        "tty": "{}",
+        "zlib": "{}",
+        "constants": "{}",
+        "vm": "{}",
+        "assert": "{}"
     },
     resolve: {
         alias: {},
@@ -91,34 +116,34 @@ const webpackConfig = {
         extensions: ['.tsx', '.ts', '.jsx', '.js', '.mjs', '.css'],
         modules: ['node_modules', path.resolve(rootPath, 'node_modules')],
         fallback: {
-            assert: "assert",
-            buffer: "buffer",
-            console: "console-browserify",
-            constants: "constants-browserify",
-            crypto: "crypto-browserify",
-            domain: "domain-browser",
-            events: "events",
-            http: "stream-http",
-            https: "https-browserify",
-            os: "os-browserify",
-            path: "path-browserify",
-            punycode: "punycode",
-            process: "process",
-            querystring: "querystring-es3",
-            stream: "stream-browserify",
-            _stream_duplex: "readable-stream",
-            _stream_passthrough: "readable-stream",
-            _stream_readable: "readable-stream",
-            _stream_transform: "readable-stream",
-            _stream_writable: "readable-stream",
-            string_decoder: "string_decoder",
-            sys: "util",
-            timers: "timers-browserify",
-            tty: "tty-browserify",
-            url: "url",
-            util: "util",
-            vm: "vm-browserify",
-            zlib: "browserify-zlib"
+            assert: false,
+            buffer: false,
+            console: false,
+            constants: false,
+            crypto: false,
+            domain: false,
+            events: false,
+            http: false,
+            https: false,
+            os: false,
+            path: false,
+            punycode: false,
+            process: false,
+            querystring: false,
+            stream: false,
+            _stream_duplex: false,
+            _stream_passthrough: false,
+            _stream_readable: false,
+            _stream_transform: false,
+            _stream_writable: false,
+            string_decoder: false,
+            sys: false,
+            timers: false,
+            tty: false,
+            url: false,
+            util: false,
+            vm: false,
+            zlib: false
         }
     },
     output: {
@@ -144,10 +169,6 @@ const webpackConfig = {
         ignored: ['node_modules/**']
     },
     plugins: [
-        new webpack.ProvidePlugin({
-            Buffer: ["buffer", "Buffer"],
-            process: "process/browser"
-        }),
         new MiniCssExtractPlugin({
             filename: config.build.css,
             chunkFilename: "[id].css"
