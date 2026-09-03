@@ -51,7 +51,7 @@
     "powerbi-visuals-webpack-plugin": "https://github.com/VD-ISW/powerbi-visuals-webpack-plugin.git#3f0fbcb0ada502437ca4c17a17b56865e6e0f3f3",
     "terser-webpack-plugin": "^5.6.1",
     "ts-loader": "^9.5.4",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "webpack": "^5.107.2",
     "webpack-bundle-analyzer": "5.3.1",
     "webpack-dev-server": "^6.0.0",
