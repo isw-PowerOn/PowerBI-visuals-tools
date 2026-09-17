@@ -82,6 +82,7 @@ const webpackConfig = {
         modules: ['node_modules', path.resolve(rootPath, 'node_modules')],
     },
     externals: {
+        "@vizlib/webix-pro": "webix",
         "powerbi-visuals-api": 'null',
         // Prevent Node.js core modules from being bundled
         "fs": "{}",

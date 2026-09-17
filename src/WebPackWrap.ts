@@ -37,6 +37,7 @@ export interface WebpackOptions {
     devServerPort?: number;
     fast?: boolean;
     skipApiCheck?: boolean;
+    ts6?: boolean;
     allLocales?: boolean;
     pbivizFile?: string;
     certificationAudit?: boolean;
@@ -207,7 +208,7 @@ export default class WebPackWrap {
         this.webpackConfig.mode = "production";
         this.webpackConfig.optimization.concatenateModules = false;
         this.webpackConfig.optimization.minimize = true;
-        this.webpackConfig.resolve.alias["@xbs/webix-pro$"] = path.resolve(process.cwd(), 'node_modules/@xbs/webix-pro/webix.min.js');
+        this.webpackConfig.resolve.alias["@vizlib/webix-pro$"] = path.resolve(process.cwd(), 'node_modules/@vizlib/webix-pro/webix.min.js');
     }
 
     async configureDevServer(visualPackage, port = 8080) {
@@ -236,8 +237,8 @@ export default class WebPackWrap {
     configureVisualPlugin(options, tsconfig, visualPackage) {
         this.webpackConfig.output.path = path.join(visualPackage.basePath, config.build.dropFolder);
         this.webpackConfig.output.filename = "[name]";
-        const visualPluginPath = path.join(visualPackage.basePath, ".tmp", "ts7-build", config.build.precompileFolder, visualPlugin.replace(/\.ts$/, ".js"));
-        this.webpackConfig.watchOptions.ignored.push(visualPluginPath)
+        const visualPluginPath = options.ts6 ? path.join(process.cwd(), config.build.precompileFolder, visualPlugin) : path.join(visualPackage.basePath, ".tmp", "ts7-build", config.build.precompileFolder, visualPlugin.replace(/\.ts$/, ".js"));
+        this.webpackConfig.watchOptions.ignored.push(visualPluginPath);
         this.webpackConfig.entry = {
             "visual.js": [visualPluginPath]
         };
@@ -313,7 +314,7 @@ export default class WebPackWrap {
         }
     }
 
-    async appendPlugins(options, visualPackage, tsconfig) {
+    async appendPlugins(options: WebpackOptions, visualPackage, tsconfig) {
         const pluginConfiguration = await this.configureCustomVisualsWebpackPlugin(visualPackage, options, tsconfig);
 
         let statsFilename = config.build.stats.split("/").pop();
@@ -342,6 +343,10 @@ export default class WebPackWrap {
             }
         );
 
+        if (options.ts6) {
+
+        }
+
         if (options.provideJquery) {
             this.webpackConfig.plugins.push(
                 new webpack.ProvidePlugin({
@@ -355,14 +360,30 @@ export default class WebPackWrap {
 
     async configureLoaders({
         includeAllLocales = false,
-        typescript7OutputPath
+                               typescript7OutputPath,
+                               ts6,
     }) {
-        this.webpackConfig.module.rules.push({
-            enforce: "pre",
-            include: typescript7OutputPath,
-            test: /\.js$/,
-            use: ["source-map-loader"]
-        });
+        if (ts6) {
+            this.webpackConfig.module.rules.push({
+                test: /(\.ts)x?$/,
+                use: [
+                    {
+                        loader: "ts-loader",
+                        options: {
+                            transpileOnly: false,
+                            experimentalWatchApi: false
+                        }
+                    }
+                ]
+            });
+        } else {
+            this.webpackConfig.module.rules.push({
+                enforce: "pre",
+                include: typescript7OutputPath,
+                test: /\.js$/,
+                use: ["source-map-loader"]
+            });
+        }
 
         if(!includeAllLocales){
             this.webpackConfig.module.rules.push({ 
@@ -395,15 +416,20 @@ export default class WebPackWrap {
         await this.appendPlugins(options, visualPackage, tsconfig);
         await this.configureDevServer(visualPackage, options.devServerPort);
         await this.configureVisualPlugin(options, tsconfig, visualPackage);
-        this.configureTypeScript7Precompilation(visualPackage, tsconfig);
-        this.configureTypeScript7DependencyResolution(visualPackage);
+        if (!options.ts6) {
+            this.configureTypeScript7Precompilation(visualPackage, tsconfig);
+            this.configureTypeScript7DependencyResolution(visualPackage);
+            this.webpackConfig.experiments = {
+                typescript: true,
+            }
+        }
+
         await this.configureLoaders({
             includeAllLocales: options.allLocales,
-            typescript7OutputPath: path.join(visualPackage.basePath, ".tmp", "ts7-build")
+            typescript7OutputPath: path.join(visualPackage.basePath, ".tmp", "ts7-build"),
+            ts6: options.ts6
         });
-        this.webpackConfig.experiments = {
-            typescript: true,
-        }
+
 
         return this.webpackConfig;
     }

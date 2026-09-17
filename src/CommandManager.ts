@@ -18,6 +18,7 @@ interface BaseBuildOptions {
     allLocales: boolean;
     pbivizFile: string;
     provideJquery: boolean;
+    ts6: boolean;
 }
 
 interface StartOptions extends BaseBuildOptions {
@@ -63,6 +64,7 @@ export default class CommandManager {
             allLocales: options.allLocales,
             pbivizFile: options.pbivizFile,
             provideJquery: options.provideJquery,
+            ts6: options.ts6,
         }
         const visualManager = new VisualManager(rootPath);
         await visualManager.prepareVisual(options.pbivizFile);
@@ -97,6 +99,7 @@ export default class CommandManager {
             certificationAudit: options.certificationAudit,
             certificationFix: options.certificationFix,
             provideJquery: options.provideJquery,
+            ts6: options.ts6,
             ...(options.sourceMap ? { devtool: this.SOURCE_MAP_TYPE } : {}),
         }
         const lintOptions: LintOptions = {

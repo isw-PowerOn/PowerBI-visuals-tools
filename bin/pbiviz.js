@@ -89,6 +89,7 @@ pbiviz
     .option('-f, --pbiviz-file <pbiviz-file>', "Path to visual config file (pbiviz.json / pbiviz.mjs)", pbivizFile)
     .option('--provide-jquery', 'Provides jQuery module through webpack')
     .option('--no-cache', 'Doesn\'t use webpack cache')
+    .option('--ts6', 'Degraded TypeScript to 6.x for compatibility with older visual projects', false)
     .action(async (options) => {
         CommandManager.start(options, rootPath);
     });
@@ -109,6 +110,7 @@ pbiviz
     .option('-p, --pbiviz-file <pbiviz-file>', "Path to visual config file (pbiviz.json / pbiviz.mjs)", pbivizFile)
     .option('--provide-jquery', 'Provides jQuery module through webpack')
     .option('--source-map', 'Enables source map generation')
+    .option('--ts6', 'Degraded TypeScript to 6.x for compatibility with older visual projects', false)
     .option('--certification-audit ', 'Audit the visual package for possible certification issues')
     .option('--certification-fix', 'Fix found certification issues in the visual package. Please carefully test the built package to ensure its functionality is not broken after that')
     .addOption(new Option('-c, --compression <compressionLevel>', "Enables compression of visual package")
